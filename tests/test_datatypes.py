@@ -35,3 +35,15 @@ def test_generated_sound_lookup(bipa, grapheme):
     resolved = bipa[sound]
     assert resolved.name == sound.name
     assert str(resolved) == str(sound)
+
+
+@pytest.mark.parametrize('grapheme', ['dʱʷ', 'e̤ː', 'kʷʰ', 'ǀ'])
+def test_sound_lookup_other_system(bipa, asjp, grapheme):
+    sound = bipa[grapheme]
+    if sound.featureset in asjp.features_to_sound:
+        assert asjp[sound] is asjp.features_to_sound[sound.featureset]
+        return
+    with pytest.raises(KeyError):
+        asjp[sound]
+    sentinel = object()
+    assert asjp.get(sound, default=sentinel) is sentinel

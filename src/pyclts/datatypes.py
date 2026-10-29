@@ -361,9 +361,10 @@ class TranscriptionSystem(TranscriptionBase):  # pylint: disable=R0902
 
     def resolve_sound(self, sound) -> Union[Symbol, Sound]:
         if isinstance(sound, Sound):  # noqa: F405
-            if sound.featureset in self.features_to_sound:
-                return self.features_to_sound[sound.featureset]
-            return self._from_name(sound.name)
+            if (sound.generated and sound.ts is self
+                    and sound.featureset not in self.features_to_sound):
+                return sound
+            return self.features_to_sound[sound.featureset]
         if isinstance(sound, Symbol):  # noqa: F405
             return sound
         if set(sound.split(' ')).intersection(
